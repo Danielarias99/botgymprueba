@@ -19,7 +19,7 @@ class WhatsAppService {
       }
   
       await axios.post(
-        `https://graph.facebook.com/${config.API_VERSION}/${config.BUSINESS_PHONE}/messages`,
+        `https://graph.facebook.com/v22.0/591259317412047/messages`,
         data,
         {
           headers: {
@@ -41,7 +41,7 @@ class WhatsAppService {
     }
     try {
       await axios.post(
-        `https://graph.facebook.com/${config.API_VERSION}/${config.BUSINESS_PHONE}/messages`,
+        `https://graph.facebook.com/v22.0/591259317412047/messages`,
         {
           messaging_product: 'whatsapp',
           status: 'read',
@@ -70,7 +70,7 @@ class WhatsAppService {
     }
     try {
       await axios.post(
-        `https://graph.facebook.com/${config.API_VERSION}/${config.BUSINESS_PHONE}/messages`,
+        `https://graph.facebook.com/v22.0/591259317412047/messages`,
         {
           messaging_product: 'whatsapp',
           to,
@@ -116,7 +116,7 @@ class WhatsAppService {
             
       }
       await axios.post(
-        `https://graph.facebook.com/${config.API_VERSION}/${config.BUSINESS_PHONE}/messages`,
+        `https://graph.facebook.com/v22.0/591259317412047/messages`,
         {
           messaging_product: 'whatsapp',
           to,

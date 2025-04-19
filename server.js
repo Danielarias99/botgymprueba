@@ -6,87 +6,25 @@
  */
 
 import express from "express";
-import axios from "axios";
 import 'dotenv/config';
-import QueryController from './src/controllers/queryController.js';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import webhookController from './src/controllers/webhookController.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Verificar la variable de entorno al inicio
+console.log('VERIFICANDO ENV:', { GOOGLE_CREDENTIALS_BASE64_DEFINED: !!process.env.GOOGLE_CREDENTIALS_BASE64 });
 
 const app = express();
 app.use(express.json());
 
-const { WEBHOOK_VERIFY_TOKEN, API_TOKEN, BUSINESS_PHONE, API_VERSION, PORT, DEEPSEEK_API_KEY } = process.env;
+const { PORT } = process.env;
 
-// Inicializar el controlador de consultas
-const queryController = new QueryController(DEEPSEEK_API_KEY);
-
-app.post("/webhook", async (req, res) => {
-  // log incoming messages
-  console.log("Incoming webhook message:", JSON.stringify(req.body, null, 2));
-
-  // check if the webhook request contains a message
-  const message = req.body.entry?.[0]?.changes[0]?.value?.messages?.[0];
-
-  // check if the incoming message contains text
-  if (message?.type === "text") {
-    let responseText = "Echo: " + message.text.body;
-
-    // Intentar procesar como consulta
-    const queryResponse = await queryController.handleQuery(message.text.body);
-    if (queryResponse) {
-      responseText = queryResponse;
-    }
-
-    // send a reply message
-    await axios({
-      method: "POST",
-      url: `https://graph.facebook.com/${API_VERSION}/${BUSINESS_PHONE}/messages`,
-      headers: {
-        Authorization: `Bearer ${API_TOKEN}`,
-      },
-      data: {
-        messaging_product: "whatsapp",
-        to: message.from,
-        text: { body: responseText },
-        context: {
-          message_id: message.id,
-        },
-      },
-    });
-
-    // mark incoming message as read
-    await axios({
-      method: "POST",
-      url: `https://graph.facebook.com/${API_VERSION}/${BUSINESS_PHONE}/messages`,
-      headers: {
-        Authorization: `Bearer ${API_TOKEN}`,
-      },
-      data: {
-        messaging_product: "whatsapp",
-        status: "read",
-        message_id: message.id,
-      },
-    });
-  }
-
-  res.sendStatus(200);
-});
-
-// accepts GET requests at the /webhook endpoint. You need this URL to setup webhook initially.
-// info on verification request payload: https://developers.facebook.com/docs/graph-api/webhooks/getting-started#verification-requests
-app.get("/webhook", (req, res) => {
-  const mode = req.query["hub.mode"];
-  const token = req.query["hub.verify_token"];
-  const challenge = req.query["hub.challenge"];
-
-  // check the mode and token sent are correct
-  if (mode === "subscribe" && token === WEBHOOK_VERIFY_TOKEN) {
-    // respond with 200 OK and challenge token from the request
-    res.status(200).send(challenge);
-    console.log("Webhook verified successfully!");
-  } else {
-    // respond with '403 Forbidden' if verify tokens do not match
-    res.sendStatus(403);
-  }
-});
+// Rutas del webhook
+app.post("/webhook", webhookController.handleIncoming);
+app.get("/webhook", webhookController.verifyWebhook);
 
 app.get("/", (req, res) => {
   res.send(`<pre>Nothing to see here.

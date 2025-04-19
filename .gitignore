@@ -12,6 +12,8 @@ yarn-error.log
 # Credentials
 src/credentials/
 *.json
+!package.json
+!package-lock.json
 
 # IDE
 .vscode/

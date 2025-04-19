@@ -1,0 +1,30 @@
+{
+  "name": "medpet",
+  "version": "1.0.0",
+  "main": "server.js",
+  "type": "module",
+  "engines": {
+    "node": "18.x",
+    "npm": ">=8.0.0"
+  },
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "echo 'No build step needed'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.7.7",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "googleapis": "^148.0.0",
+    "openai": "^4.93.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
